@@ -74,6 +74,13 @@ where
         &self.inner[i]
     }
 
+    pub fn is_solved(&self) -> bool {
+        self.inner.iter().all(|vial| {
+            let expected = &vial.inner[0];
+            vial.inner.iter().all(|c| c == expected)
+        })
+    }
+
     pub fn reset(&mut self) {
         self.inner = self.original;
     }

@@ -41,6 +41,7 @@ pub struct GenericPuzzleDisplay<
     active_index: Option<usize>,
     move_count: usize,
     move_display: Element,
+    solved_text: HtmlElement,
 }
 
 impl<const N: usize, const T: usize, const C: usize, const K: usize, P, R>
@@ -67,8 +68,16 @@ where
         row.set_class_name("puzzlerow");
         container.append_child(&row)?;
 
+        let msgs = document.create_element("div")?;
+        msgs.set_class_name("puzzlerow");
+        container.append_child(&msgs)?;
+
         let move_display = document.create_element("p")?;
-        container.append_child(&move_display)?;
+        msgs.append_child(&move_display)?;
+
+        let solved_text: HtmlElement = document.create_element("h3")?.unchecked_into();
+        solved_text.set_text_content(Some("Solved! Nice job!"));
+        msgs.append_child(&solved_text)?;
 
         for i in 0..T {
             let (vial, contents) = create_vial(puzzle.get(i), document, &row)?;
@@ -95,8 +104,10 @@ where
             active_index: None,
             move_count: 0,
             move_display,
+            solved_text,
         };
 
+        this.set_solved_text_visible(false);
         this.set_move_display();
         Ok(this)
     }
@@ -112,6 +123,7 @@ where
                                 self.move_count += 1;
                                 self.set_move_display();
                             }
+                            self.set_solved_text_visible(self.puzzle.is_solved());
                             self.deactivate_index();
                         }
                     },
@@ -119,12 +131,14 @@ where
                         self.puzzle.regenerate();
                         self.deactivate_index();
                         self.move_count = 0;
+                        self.set_solved_text_visible(false);
                         self.set_move_display();
                     }
                     Msg::Reset => {
                         self.puzzle.reset();
                         self.deactivate_index();
                         self.move_count = 0;
+                        self.set_solved_text_visible(false);
                         self.set_move_display();
                     }
                 }
@@ -135,6 +149,20 @@ where
     fn set_move_display(&self) {
         let text = format!("Move Count: {}", self.move_count);
         self.move_display.set_text_content(Some(&text));
+    }
+
+    fn set_solved_text_visible(&self, is_visible: bool) {
+        if is_visible {
+            self.solved_text
+                .style()
+                .set_property("display", "block")
+                .ok();
+        } else {
+            self.solved_text
+                .style()
+                .set_property("display", "none")
+                .ok();
+        }
     }
 
     fn activate_index(&mut self, idx: usize) {
