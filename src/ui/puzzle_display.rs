@@ -39,6 +39,8 @@ pub struct GenericPuzzleDisplay<
     vials: [Element; T],
     rx: mpsc::UnboundedReceiver<Msg>,
     active_index: Option<usize>,
+    move_count: usize,
+    move_display: Element,
 }
 
 impl<const N: usize, const T: usize, const C: usize, const K: usize, P, R>
@@ -64,6 +66,10 @@ where
         let row = document.create_element("div")?;
         row.set_class_name("puzzlerow");
         container.append_child(&row)?;
+
+        let move_display = document.create_element("p")?;
+        container.append_child(&move_display)?;
+
         for i in 0..T {
             let (vial, contents) = create_vial(puzzle.get(i), document, &row)?;
             cells[i] = contents;
@@ -81,13 +87,18 @@ where
             closure.forget();
         }
 
-        Ok(Self {
+        let this = Self {
             puzzle,
             cells,
             vials,
             rx,
             active_index: None,
-        })
+            move_count: 0,
+            move_display,
+        };
+
+        this.set_move_display();
+        Ok(this)
     }
 
     pub fn spawn(mut self) {
@@ -97,21 +108,33 @@ where
                     Msg::Select(idx) => match self.active_index {
                         None => self.activate_index(idx),
                         Some(src) => {
-                            self.puzzle.pour(src, idx);
+                            if self.puzzle.pour(src, idx) {
+                                self.move_count += 1;
+                                self.set_move_display();
+                            }
                             self.deactivate_index();
                         }
                     },
                     Msg::NewPuzzle => {
                         self.puzzle.regenerate();
                         self.deactivate_index();
+                        self.move_count = 0;
+                        self.set_move_display();
                     }
                     Msg::Reset => {
                         self.puzzle.reset();
                         self.deactivate_index();
+                        self.move_count = 0;
+                        self.set_move_display();
                     }
                 }
             }
         })
+    }
+
+    fn set_move_display(&self) {
+        let text = format!("Move Count: {}", self.move_count);
+        self.move_display.set_text_content(Some(&text));
     }
 
     fn activate_index(&mut self, idx: usize) {

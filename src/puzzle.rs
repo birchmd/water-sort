@@ -78,19 +78,19 @@ where
         self.inner = self.original;
     }
 
-    pub fn pour(&mut self, src: usize, dst: usize) {
+    pub fn pour(&mut self, src: usize, dst: usize) -> bool {
         if src == dst {
-            return;
+            return false;
         }
 
         let vials = &mut self.inner;
         let Ok([vial1, vial2]) = vials.get_disjoint_mut([src, dst]) else {
-            return;
+            return false;
         };
 
         let Some(mut from) = vial1.inner.iter().position(|c| c > &0) else {
             // Pouring is impossible if src is empty
-            return;
+            return false;
         };
 
         let Some(mut to) = vial2
@@ -101,7 +101,7 @@ where
             .find_map(|(i, c)| if c == &0 { Some(i) } else { None })
         else {
             // Pouring is impossible if dst is full
-            return;
+            return false;
         };
 
         let c = vial1.inner[from];
@@ -114,6 +114,8 @@ where
             to -= 1;
             from += 1;
         }
+
+        true
     }
 }
 

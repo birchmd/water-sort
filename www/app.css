@@ -18,7 +18,7 @@ button {
 .puzzlerow {
     display: flex;
     gap: 20px;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .vial table {
