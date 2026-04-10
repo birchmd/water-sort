@@ -197,6 +197,17 @@ fn test_solve() {
     assert_eq!(steps, 1);
 
     let example = [
+        Vial::new([0, 4, 4, 4, 3]),
+        Vial::new([0, 1, 1, 1, 1]),
+        Vial::new([3, 3, 4, 3, 3]),
+        Vial::new([0, 0, 0, 1, 4]),
+        Vial::new([2, 2, 2, 2, 2]),
+        Vial::new([0, 0, 0, 0, 0]),
+    ];
+    let steps = solve::<5, 6, 4>(example).unwrap();
+    assert_eq!(steps, 5);
+
+    let example = [
         Vial::new([4, 3, 4, 1, 1]),
         Vial::new([2, 1, 2, 3, 4]),
         Vial::new([2, 1, 4, 2, 3]),
