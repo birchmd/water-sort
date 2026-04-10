@@ -1,12 +1,12 @@
 use {
-    crate::{
-        puzzle::{GenericPuzzle, Vial},
-        utils::comp_time_arith::{IsSum, SixEqualsFourPlusTwo},
-    },
     core::array,
     futures_channel::mpsc,
     rand::{Rng, rngs::StdRng},
     wasm_bindgen::{JsCast, JsValue, prelude::Closure},
+    water_sort_core::{
+        puzzle::{GenericPuzzle, Vial},
+        utils::comp_time_arith::{IsSum, SixEqualsFourPlusTwo},
+    },
     web_sys::{Document, Element, HtmlElement},
 };
 

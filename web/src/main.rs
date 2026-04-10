@@ -1,7 +1,5 @@
-use wasm_bindgen::JsValue;
+use {wasm_bindgen::JsValue, water_sort_core::puzzle};
 
-mod puzzle;
-mod solver;
 mod ui;
 mod utils;
 

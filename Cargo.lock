@@ -440,7 +440,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "water-sort"
+name = "water-sort-core"
+version = "0.1.0"
+dependencies = [
+ "rand",
+]
+
+[[package]]
+name = "water-sort-web"
 version = "0.1.0"
 dependencies = [
  "futures-channel",
@@ -448,6 +455,7 @@ dependencies = [
  "rand",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "water-sort-core",
  "web-sys",
 ]
 

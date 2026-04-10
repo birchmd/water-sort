@@ -1,2 +1,2 @@
 [build]
-target = "www/index.html"
+target = "web/www/index.html"
