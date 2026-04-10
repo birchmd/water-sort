@@ -1,2 +1,5 @@
 [build]
 target = "web/www/index.html"
+public_url = "/water-sort/"
+dist = "docs"
+release = true
