@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>Water Sort</title>
+	<link rel="stylesheet" href="/water-sort/app-dc3b1dc94f745762.css" integrity="sha384-N3+3FkDH/NMhNHU+iQzrQ5HY6w6ls/IFnmBYIxvMC3a2PtHHgQNpy9YukogSTxY2"/>
+	
+<script type="module">
+import init, * as bindings from '/water-sort/water-sort-web-4895f4e8deef68f.js';
+const wasm = await init({ module_or_path: '/water-sort/water-sort-web-4895f4e8deef68f_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+    <link rel="modulepreload" href="/water-sort/water-sort-web-4895f4e8deef68f.js" crossorigin="anonymous" integrity="sha384-xDRb4jPxMn7MAz39EomQeqo3xyweLux0bEX6wxtUy3UnBS/wkSinFc6kH8Nchc0W"><link rel="preload" href="/water-sort/water-sort-web-4895f4e8deef68f_bg.wasm" crossorigin="anonymous" integrity="sha384-WfrCAI98XpYp8Fewt0Mgo2rKuxgkV4iKYzUDhBZhA+/4+ZpmPyrv2NVRKFTU3osC" as="fetch" type="application/wasm"></head>
+    <body></body>
+</html>
