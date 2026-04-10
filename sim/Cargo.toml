@@ -1,0 +1,8 @@
+[package]
+name = "water-sort-sim"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+rand = { workspace = true, features = ["std", "thread_rng"]}
+water-sort-core.workspace = true

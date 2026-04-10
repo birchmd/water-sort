@@ -44,32 +44,9 @@ where
     }
 
     pub fn regenerate(&mut self) {
-        // Set up buffer with all the colours and shuffle it
-        let mut buf = Vec::with_capacity(C * N);
-        for c in 1..=C {
-            for _ in 0..N {
-                buf.push(c as u8);
-            }
-        }
-        buf.shuffle(&mut self.rng);
+        shuffle_state::<N, T, C, R>(&mut self.inner, &mut self.rng);
 
-        // Fill first C vials
-        let inner = &mut self.inner;
-        let iter = inner.iter_mut().enumerate().take(C);
-        for (i, v) in iter {
-            let s = i * N;
-            let e = s + N;
-            v.inner.copy_from_slice(&buf[s..e]);
-        }
-
-        // Last K vials are empty
-        for v in inner.iter_mut().skip(C) {
-            for cell in v.inner.iter_mut() {
-                *cell = 0;
-            }
-        }
-
-        if let Some(steps) = crate::solver::solve::<N, T, C>(*inner) {
+        if let Some(steps) = crate::solver::solve::<N, T, C>(self.inner) {
             self.steps = steps
         } else {
             self.regenerate();
@@ -108,6 +85,38 @@ where
         };
 
         pour(vial1, vial2)
+    }
+}
+
+/// Note: does not guarantee the result is solvable!
+pub fn shuffle_state<const N: usize, const T: usize, const C: usize, R>(
+    state: &mut [Vial<N>; T],
+    rng: &mut R,
+) where
+    R: Rng,
+{
+    // Set up buffer with all the colours and shuffle it
+    let mut buf = Vec::with_capacity(C * N);
+    for c in 1..=C {
+        for _ in 0..N {
+            buf.push(c as u8);
+        }
+    }
+    buf.shuffle(rng);
+
+    // Fill first C vials
+    let iter = state.iter_mut().enumerate().take(C);
+    for (i, v) in iter {
+        let s = i * N;
+        let e = s + N;
+        v.inner.copy_from_slice(&buf[s..e]);
+    }
+
+    // Last K vials are empty
+    for v in state.iter_mut().skip(C) {
+        for cell in v.inner.iter_mut() {
+            *cell = 0;
+        }
     }
 }
 

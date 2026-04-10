@@ -101,6 +101,7 @@ dependencies = [
  "js-sys",
  "libc",
  "r-efi",
+ "rand_core",
  "wasip2",
  "wasip3",
  "wasm-bindgen",
@@ -240,6 +241,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc266eb313df6c5c09c1c7b1fbe2510961e5bcd3add930c1e31f7ed9da0feff8"
 dependencies = [
  "chacha20",
+ "getrandom",
  "rand_core",
 ]
 
@@ -444,6 +446,14 @@ name = "water-sort-core"
 version = "0.1.0"
 dependencies = [
  "rand",
+]
+
+[[package]]
+name = "water-sort-sim"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "water-sort-core",
 ]
 
 [[package]]
