@@ -41,6 +41,7 @@ pub struct GenericPuzzleDisplay<
     active_index: Option<usize>,
     move_count: usize,
     move_display: Element,
+    optimal_display: Element,
     solved_text: HtmlElement,
 }
 
@@ -75,8 +76,10 @@ where
         let move_display = document.create_element("p")?;
         msgs.append_child(&move_display)?;
 
+        let optimal_display = document.create_element("p")?;
+        msgs.append_child(&optimal_display)?;
+
         let solved_text: HtmlElement = document.create_element("h3")?.unchecked_into();
-        solved_text.set_text_content(Some("Solved! Nice job!"));
         msgs.append_child(&solved_text)?;
 
         for i in 0..T {
@@ -104,11 +107,13 @@ where
             active_index: None,
             move_count: 0,
             move_display,
+            optimal_display,
             solved_text,
         };
 
         this.set_solved_text_visible(false);
         this.set_move_display();
+        this.set_optimal_display();
         Ok(this)
     }
 
@@ -133,6 +138,7 @@ where
                         self.move_count = 0;
                         self.set_solved_text_visible(false);
                         self.set_move_display();
+                        self.set_optimal_display();
                     }
                     Msg::Reset => {
                         self.puzzle.reset();
@@ -146,6 +152,11 @@ where
         })
     }
 
+    fn set_optimal_display(&self) {
+        let text = format!("Minimum Moves: {}", self.puzzle.min_moves());
+        self.optimal_display.set_text_content(Some(&text));
+    }
+
     fn set_move_display(&self) {
         let text = format!("Move Count: {}", self.move_count);
         self.move_display.set_text_content(Some(&text));
@@ -153,6 +164,12 @@ where
 
     fn set_solved_text_visible(&self, is_visible: bool) {
         if is_visible {
+            if self.puzzle.min_moves() < self.move_count {
+                self.solved_text
+                    .set_text_content(Some("You solved it, but there is a more efficient way!"));
+            } else {
+                self.solved_text.set_text_content(Some("Solved! Nice job!"));
+            }
             self.solved_text
                 .style()
                 .set_property("display", "block")

@@ -1,6 +1,7 @@
 use wasm_bindgen::JsValue;
 
 mod puzzle;
+mod solver;
 mod ui;
 mod utils;
 

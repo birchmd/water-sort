@@ -17,6 +17,7 @@ where
 {
     inner: [Vial<N>; T],
     original: [Vial<N>; T],
+    steps: usize,
     rng: R,
     proof: PhantomData<P>,
 }
@@ -28,10 +29,11 @@ where
     R: Rng,
 {
     pub fn new(rng: R) -> Self {
-        let inner = [Vial { inner: [0; N] }; T];
+        let inner = [Vial::new([0; N]); T];
         let mut this = Self {
             original: inner,
             inner,
+            steps: 0,
             rng,
             proof: PhantomData,
         };
@@ -67,11 +69,21 @@ where
             }
         }
 
+        if let Some(steps) = crate::solver::solve::<N, T, C>(*inner) {
+            self.steps = steps
+        } else {
+            self.regenerate();
+        }
+
         self.original = self.inner;
     }
 
     pub fn get(&self, i: usize) -> &Vial<N> {
         &self.inner[i]
+    }
+
+    pub fn min_moves(&self) -> usize {
+        self.steps
     }
 
     pub fn is_solved(&self) -> bool {
@@ -95,44 +107,56 @@ where
             return false;
         };
 
-        let Some(mut from) = vial1.inner.iter().position(|c| c > &0) else {
-            // Pouring is impossible if src is empty
-            return false;
-        };
-
-        let Some(mut to) = vial2
-            .inner
-            .iter()
-            .enumerate()
-            .rev()
-            .find_map(|(i, c)| if c == &0 { Some(i) } else { None })
-        else {
-            // Pouring is impossible if dst is full
-            return false;
-        };
-
-        let c = vial1.inner[from];
-        while from < N && vial1.inner[from] == c {
-            vial1.inner[from] = 0;
-            vial2.inner[to] = c;
-            if to == 0 {
-                break;
-            }
-            to -= 1;
-            from += 1;
-        }
-
-        true
+        pour(vial1, vial2)
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+pub fn pour<const N: usize>(src: &mut Vial<N>, dst: &mut Vial<N>) -> bool {
+    let Some(mut from) = src.inner.iter().position(|c| c > &0) else {
+        // Pouring is impossible if src is empty
+        return false;
+    };
+
+    let Some(mut to) = dst
+        .inner
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(i, c)| if c == &0 { Some(i) } else { None })
+    else {
+        // Pouring is impossible if dst is full
+        return false;
+    };
+
+    let c = src.inner[from];
+    while from < N && src.inner[from] == c {
+        src.inner[from] = 0;
+        dst.inner[to] = c;
+        if to == 0 {
+            break;
+        }
+        to -= 1;
+        from += 1;
+    }
+
+    true
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Vial<const N: usize> {
     inner: [u8; N],
 }
 
 impl<const N: usize> Vial<N> {
+    pub const fn new(inner: [u8; N]) -> Self {
+        Self { inner }
+    }
+
     pub fn get(&self, i: usize) -> u8 {
         self.inner[i]
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &u8> {
+        self.inner.iter()
     }
 }
